@@ -1,0 +1,25 @@
+***REMOVED***
+***REMOVED***
+stream = http://media/stream/input
+server = server.hosting.podcastgenerator
+user = username
+password = password
+***REMOVED***
+***REMOVED***
+saveto = ~/
+
+***REMOVED***
+***REMOVED***
+***REMOVED***
+server = server.hosting.podcastgenerator
+user = username
+password = password
+***REMOVED***
+***REMOVED***
+stream = http://media/stream/input
+
+***REMOVED***
+url = http://ouncludserver
+user = username
+password = password
+ocbasedir = DirToUploadTo
