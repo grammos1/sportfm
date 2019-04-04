@@ -2,7 +2,6 @@ import sys
 import vlc
 import datetime
 from time import sleep
-from pydub import AudioSegment
 import owncloud
 import paramiko
 import os
@@ -10,6 +9,7 @@ import urllib.request
 import configparser
 import sys
 import shutil
+import ffmpy3
 
 def getSetting(section, setting):
     config = configparser.ConfigParser()
@@ -31,7 +31,7 @@ toLocal = False
 
 if len (sys.argv) <2:
     print ("You have not passed enough arguments")
-    print ("Usage: pyrcord [name=NAME] duration=DURATION_IN_SECONDS [toOwncloud] [toPodcast] [toLocal]")
+    print ("Usage: pyRecord [name=NAME] duration=DURATION_IN_SECONDS [toOwncloud] [toPodcast] [toLocal]")
 
     exit (1)
 for param in sys.argv:
@@ -45,7 +45,7 @@ for param in sys.argv:
             duration = int(str(param).lower().strip("duration="))
         except:
             print ("Duration must be a number, eg duration=3660")
-            print("Usage: pyrcord [name=NAME] duration=DURATION_IN_SECONDS [toOwncloud] [toPodcast] [toLocal]")
+            print("Usage: pyRecord [name=NAME] duration=DURATION_IN_SECONDS [toOwncloud] [toPodcast] [toLocal]")
             exit(1)
     if "toowncloud" in str(param).lower():
         #print("Will upload to ouwncloud")
@@ -58,12 +58,12 @@ for param in sys.argv:
         toLocal = True
 if name=="":
     print ("You must specify a name, e.g. name=myShow")
-    print ("Usage: pyrcord [name=NAME] duration=DURATION_IN_SECONDS [toOwncloud] [toPodcast] [toLocal]")
+    print ("Usage: pyRecord [name=NAME] duration=DURATION_IN_SECONDS [toOwncloud] [toPodcast] [toLocal]")
     exit(1)
 
 if duration <=0 :
     print ("I do need the duration of the clip you want me to record. Don't make me guess ...")
-    print ("Usage: pyrcord name=NAME duration=DURATION_IN_SECONDS [toOwncloud] [toPodcast] [toLocal]")
+    print ("Usage: pyRecord name=NAME duration=DURATION_IN_SECONDS [toOwncloud] [toPodcast] [toLocal]")
     exit (1)
 
 #stream = 'http://sportfm.live24.gr/sportfm7712'
@@ -142,8 +142,9 @@ media.get_mrl()
 player.set_media(media)
 try:
     player.play()
-except:
+except Exception as e:
     print ("Cannot record from that stream")
+    print ("Error = " + str(e))
     print ("/OpensWindowAndJumpsOut")
     exit (2)
 recording = True
@@ -158,20 +159,29 @@ while recording:
         break
 
 try:
-    recording = AudioSegment.from_mp3(filename)
-except:
+    # recording = AudioSegment.from_mp3(filename)
+    tempfilename = filename.replace(".mp3", "a.mp3")
+    os.replace(filename, tempfilename)
+    title = filename.replace(".mp3", "")
+    print("Will set title to " + title)
+    artist = streamName
+    genre = "radio"
+    album = streamName
+    print("Running Audio conversion, trimming and tagging")
+    ff = ffmpy3.FFmpeg(inputs={tempfilename: None}, outputs={
+        filename: '-acodec copy -ss 00:02:00 -metadata title=' + str(title) + ' -metadata artist=' + str(
+            artist) + ' -metadata genre=' + str(genre) + ' -metadata album=' + str(album)})
+    ff.run()
+except Exception as e:
     print ("Failed to record a valid audio file")
+    print ("Error = " + str(e))
     print("/OpensWindowAndJumpsOut")
     exit (2)
-recording = recording[reduceby*1000:]
-recording = recording +6
-title = filename.replace(".mp3", "")
-print ("Adding Title " + title)
-artist = streamName
-genre = "radio"
-album = streamName
-tags = {'title': title, 'artist': artist, 'genre' : genre, 'album' : album}
-recording.export("new" + filename, format="mp3", bitrate="64k", tags=tags)
+#recording = recording[reduceby*1000:]
+#recording = recording +6
+
+#tags = {'title': title, 'artist': artist, 'genre' : genre, 'album' : album}
+#recording.export("new" + filename, format="mp3", bitrate="64k", tags=tags)
 
 if toOwncloud:
     print ("Uploading to OwnCloud")
@@ -192,12 +202,12 @@ if toOwncloud:
         print ("Could not upload file. Go figure ...")
 
 if toPodcast:
-    print ("Uploading file to podcasr")
+    print ("Uploading file to podcast")
     ssh = paramiko.SSHClient()
     ssh.load_host_keys(os.path.expanduser(os.path.join("~", ".ssh", "known_hosts")))
     ssh.connect(sshserver, username=sshuser, password=sshpass)
     sftp = ssh.open_sftp()
-    sftp.put("new"+filename, sshpath + filename)
+    sftp.put(filename, sshpath + filename)
     sftp.close()
     ssh.close()
 
@@ -217,7 +227,7 @@ if toLocal:
 print ("Deleting local files")
 
 os.remove(filename)
-os.remove("new"+filename)
+os.remove(tempfilename)
 
 exit(0)
 
