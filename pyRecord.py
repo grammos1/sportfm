@@ -197,7 +197,7 @@ if toOwncloud:
             print ("Cannot create OwnCloud Dir, possibly because it exists already")
 
     try:
-        oc.put_file(oclocation + filename, "new"+filename)
+        oc.put_file(oclocation + filename, filename)
     except:
         print ("Could not upload file. Go figure ...")
 
