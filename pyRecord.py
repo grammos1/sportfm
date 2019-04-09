@@ -23,6 +23,9 @@ def getSetting(section, setting):
     except:
         print ("Key " + setting + " not found in section "+ section)
 
+def debug(message):
+    print (str(datetime.datetime.now()) + " --::-- " + str(message))
+
 name = ""
 duration = -1
 toOwncloud = False
@@ -30,8 +33,8 @@ toPodcast = False
 toLocal = False
 
 if len (sys.argv) <2:
-    print ("You have not passed enough arguments")
-    print ("Usage: pyRecord [name=NAME] duration=DURATION_IN_SECONDS [toOwncloud] [toPodcast] [toLocal]")
+    debug  ("You have not passed enough arguments")
+    debug ("Usage: pyRecord [name=NAME] duration=DURATION_IN_SECONDS [toOwncloud] [toPodcast] [toLocal]")
 
     exit (1)
 for param in sys.argv:
@@ -44,8 +47,8 @@ for param in sys.argv:
         try:
             duration = int(str(param).lower().strip("duration="))
         except:
-            print ("Duration must be a number, eg duration=3660")
-            print("Usage: pyRecord [name=NAME] duration=DURATION_IN_SECONDS [toOwncloud] [toPodcast] [toLocal]")
+            debug ("Duration must be a number, eg duration=3660")
+            debug ("Usage: pyRecord [name=NAME] duration=DURATION_IN_SECONDS [toOwncloud] [toPodcast] [toLocal]")
             exit(1)
     if "toowncloud" in str(param).lower():
         #print("Will upload to ouwncloud")
@@ -57,13 +60,13 @@ for param in sys.argv:
         #print("Will upload to podcast")
         toLocal = True
 if name=="":
-    print ("You must specify a name, e.g. name=myShow")
-    print ("Usage: pyRecord [name=NAME] duration=DURATION_IN_SECONDS [toOwncloud] [toPodcast] [toLocal]")
+    debug ("You must specify a name, e.g. name=myShow")
+    debug ("Usage: pyRecord [name=NAME] duration=DURATION_IN_SECONDS [toOwncloud] [toPodcast] [toLocal]")
     exit(1)
 
 if duration <=0 :
-    print ("I do need the duration of the clip you want me to record. Don't make me guess ...")
-    print ("Usage: pyRecord name=NAME duration=DURATION_IN_SECONDS [toOwncloud] [toPodcast] [toLocal]")
+    debug ("I do need the duration of the clip you want me to record. Don't make me guess ...")
+    debug ("Usage: pyRecord name=NAME duration=DURATION_IN_SECONDS [toOwncloud] [toPodcast] [toLocal]")
     exit (1)
 
 #stream = 'http://sportfm.live24.gr/sportfm7712'
@@ -82,7 +85,7 @@ savelocation = ""
 
 stream = getSetting(name.upper(),"stream")
 if stream=="":
-    print ("Cannot determine stream url. Set the stream parameter in the settings file. Goodbye")
+    debug ("Cannot determine stream url. Set the stream parameter in the settings file. Goodbye")
     exit (1)
 if toOwncloud:
     ocuser = getSetting("OWNCLOUD", "user")
@@ -90,9 +93,9 @@ if toOwncloud:
     ocurl = getSetting("OWNCLOUD", "url")
     ocbasedir = getSetting("OWNCLOUD", "ocbasedir")
     if ocuser == "" or ocpass=="" or ocurl == "":
-        print ("You want to upload to owncloud but owncloud settings in the config file are incomplete")
-        print ("Set the user, password, url and ocbasedir key/values")
-        print ("Good bye")
+        debug ("You want to upload to owncloud but owncloud settings in the config file are incomplete")
+        debug ("Set the user, password, url and ocbasedir key/values")
+        debug ("Good bye")
         exit (1)
 
 if toPodcast:
@@ -102,17 +105,17 @@ if toPodcast:
     sshpath = getSetting(name.upper(),"podcastpath")
     podcastrefreshurl = getSetting(name.upper(), "podcastrefreshurl")
     if sshuser=="" or sshpass=="" or sshserver=="" or podcastrefreshurl=="":
-        print("You want to upload to podcast generator but settings in the config file are incomplete")
-        print ("Set the user, password, server, podcastpath and podcastrefreshurl key/values")
-        print ("Good bye")
+        debug ("You want to upload to podcast generator but settings in the config file are incomplete")
+        debug ("Set the user, password, server, podcastpath and podcastrefreshurl key/values")
+        debug ("Good bye")
 if toLocal:
     savelocation = getSetting("DEFAULT", "saveto")
     if savelocation=="":
-        print ("You want to save the file to local/mounted filesystems but settings in the config file are incomplete")
-        print ("Please set the savelocation key/value under the DEFAULT section")
-        print ("Good bye")
+        debug ("You want to save the file to local/mounted filesystems but settings in the config file are incomplete")
+        debug ("Please set the savelocation key/value under the DEFAULT section")
+        debug ("Good bye")
         exit (1)
-    print("Will save to " + str(savelocation))
+        debug ("Will save to " + str(savelocation))
 
 trimstart = int(getSetting(name.upper(),"trimstart"))
 recordatleast = duration
@@ -127,9 +130,10 @@ today = today +"-"+ now.strftime('%a')
 streamName = name
 filename = streamName + today + ".mp3"
 targetdir = "/" + streamName +"/" + str(now.year) + "/" + str(now.month) + " - " + str(now.strftime("%b"))
-print ("Starting at " + str(now))
-print ("Will stop at " + str(end))
+debug ("Starting at " + str(now))
+debug ("Will stop at " + str(end))
 parameters = "sout=#transcode{acodec=mp3,channels=2,ab=64}:duplicate{dst=std{access=file,mux=raw,dst='"+filename+"'"
+caching_parameters ="--network-caching=5000"
 
 oclocation = ocbasedir+ targetdir + "/"
 
@@ -137,25 +141,25 @@ oclocation = ocbasedir+ targetdir + "/"
 
 instance = vlc.Instance()
 player = instance.media_player_new()
-media = instance.media_new(stream, parameters)
+media = instance.media_new(stream, parameters, caching_parameters)
 media.get_mrl()
 player.set_media(media)
 try:
     player.play()
 except Exception as e:
-    print ("Cannot record from that stream")
-    print ("Error = " + str(e))
-    print ("/OpensWindowAndJumpsOut")
+    debug ("Cannot record from that stream")
+    debug ("Error = " + str(e))
+    debug ("/OpensWindowAndJumpsOut")
     exit (2)
 recording = True
 while recording:
     now = datetime.datetime.now()
     if str(player.get_state()) == "State.Ended":
-        print ("Cannot record from that stream or connection lost")
+        debug ("Cannot record from that stream or connection lost")
         break
     if now > end:
         player.stop()
-        print ("OK. We are done recording")
+        debug ("OK. We are done recording")
         break
 
 try:
@@ -163,19 +167,19 @@ try:
     tempfilename = filename.replace(".mp3", "a.mp3")
     os.replace(filename, tempfilename)
     title = filename.replace(".mp3", "")
-    print("Will set title to " + title)
+    debug("Will set title to " + title)
     artist = streamName
     genre = "radio"
     album = streamName
-    print("Running Audio conversion, trimming and tagging")
+    debug("Running Audio conversion, trimming and tagging")
     ff = ffmpy3.FFmpeg(inputs={tempfilename: None}, outputs={
         filename: '-acodec copy -ss 00:02:00 -metadata title=' + str(title) + ' -metadata artist=' + str(
             artist) + ' -metadata genre=' + str(genre) + ' -metadata album=' + str(album)})
     ff.run()
 except Exception as e:
-    print ("Failed to record a valid audio file")
-    print ("Error = " + str(e))
-    print("/OpensWindowAndJumpsOut")
+    debug ("Failed to record a valid audio file")
+    debug ("Error = " + str(e))
+    debug ("/OpensWindowAndJumpsOut")
     exit (2)
 #recording = recording[reduceby*1000:]
 #recording = recording +6
@@ -184,7 +188,7 @@ except Exception as e:
 #recording.export("new" + filename, format="mp3", bitrate="64k", tags=tags)
 
 if toOwncloud:
-    print ("Uploading to OwnCloud")
+    debug ("Uploading to OwnCloud")
     oc = owncloud.Client(ocurl)
     oc.login(ocuser, ocpass)
     dirs = oclocation.split("/")
@@ -194,15 +198,16 @@ if toOwncloud:
         try:
             oc.mkdir(dirtocreate)
         except:
-            print ("Cannot create OwnCloud Dir, possibly because it exists already")
+            debug ("Cannot create OwnCloud Dir, possibly because it exists already")
 
     try:
         oc.put_file(oclocation + filename, filename)
-    except:
-        print ("Could not upload file. Go figure ...")
+    except Exception as e:
+        debug ("Error ="  + e)
+        debug ("Could not upload file. Go figure ...")
 
 if toPodcast:
-    print ("Uploading file to podcast")
+    debug ("Uploading file to podcast")
     ssh = paramiko.SSHClient()
     ssh.load_host_keys(os.path.expanduser(os.path.join("~", ".ssh", "known_hosts")))
     ssh.connect(sshserver, username=sshuser, password=sshpass)
@@ -211,20 +216,20 @@ if toPodcast:
     sftp.close()
     ssh.close()
 
-    print ("Refreshing Podcasts")
+    debug ("Refreshing Podcasts")
     contents = urllib.request.urlopen(podcastrefreshurl).read()
 if toLocal:
-    print ("Saving to local location")
-    print ("will make dir " + savelocation + targetdir)
+    debug ("Saving to local location")
+    debug ("will make dir " + savelocation + targetdir)
     try:
         os.makedirs(savelocation + targetdir)
     except:
-        print ("Could not create local dir, possibly because it exists")
+        debug ("Could not create local dir, possibly because it exists")
     try:
         shutil.copy2 ("new" + filename, savelocation + targetdir+"/"+filename)
     except:
-        print ("Could not copy file")
-print ("Deleting local files")
+        debug ("Could not copy file")
+debug ("Deleting local files")
 
 os.remove(filename)
 os.remove(tempfilename)
