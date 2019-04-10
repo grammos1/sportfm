@@ -134,6 +134,8 @@ debug ("Starting at " + str(now))
 debug ("Will stop at " + str(end))
 parameters = "sout=#transcode{acodec=mp3,channels=2,ab=64}:duplicate{dst=std{access=file,mux=raw,dst='"+filename+"'"
 caching_parameters ="--network-caching=5000"
+reconnect_parameters = "--http-reconnect"
+quiet_parameters = "--quiet"
 
 oclocation = ocbasedir+ targetdir + "/"
 
@@ -141,7 +143,7 @@ oclocation = ocbasedir+ targetdir + "/"
 
 instance = vlc.Instance()
 player = instance.media_player_new()
-media = instance.media_new(stream, parameters, caching_parameters)
+media = instance.media_new(stream, parameters, caching_parameters, reconnect_parameters, quiet_parameters)
 media.get_mrl()
 player.set_media(media)
 try:
