@@ -41,7 +41,8 @@ for param in sys.argv:
     #print (param)
     if "name" in str(param).lower():
         #print ("Found Name : " +  str(param).lower().strip("name="))
-        name = str(param).lower().strip("name=")
+        name = str(param).lower().replace("name=","")
+        exit(0)
     if "duration" in str(param).lower():
         #print ("Found Duration of "+  str(param).lower().strip("duration="))
         try:
@@ -221,11 +222,13 @@ if toLocal:
     debug ("will make dir " + savelocation + targetdir)
     try:
         os.makedirs(savelocation + targetdir)
-    except:
+    except Exception as e:
+        debug("Error: " + str(e))
         debug ("Could not create local dir, possibly because it exists")
     try:
-        shutil.copy2 ("new" + filename, savelocation + targetdir+"/"+filename)
-    except:
+        shutil.copyfile (filename, savelocation + targetdir+"/"+filename)
+    except Exception as e:
+        debug ("Error =" + str(e))
         debug ("Could not copy file")
 debug ("Deleting local files")
 
