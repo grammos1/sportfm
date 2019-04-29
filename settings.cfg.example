@@ -1,24 +1,24 @@
-***REMOVED***
-***REMOVED***
+[DEFAULT]
+trimstart = 20
 stream = http://media/stream/input
 server = server.hosting.podcastgenerator
 user = username
 password = password
-***REMOVED***
-***REMOVED***
+podcastpath = /var/www/radio-podcasts/media/
+podcastrefreshurl=http://server.hosting.podcastgenerator/radio-podcasts/pg-cron.php?key=whatever
 saveto = ~/
 
-***REMOVED***
-***REMOVED***
-***REMOVED***
+#Example of Profile
+[FC]
+trimstart = 20
 server = server.hosting.podcastgenerator
 user = username
 password = password
-***REMOVED***
-***REMOVED***
+podcastpath = /var/www/radio-podcasts/media/
+podcastrefreshurl=http://server.hosting.podcastgenerator/radio-podcasts/pg-cron.php?key=whatever
 stream = http://media/stream/input
 
-***REMOVED***
+[OWNCLOUD]
 url = http://ouncludserver
 user = username
 password = password

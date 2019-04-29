@@ -42,7 +42,6 @@ for param in sys.argv:
     if "name" in str(param).lower():
         #print ("Found Name : " +  str(param).lower().strip("name="))
         name = str(param).lower().replace("name=","")
-        exit(0)
     if "duration" in str(param).lower():
         #print ("Found Duration of "+  str(param).lower().strip("duration="))
         try:
