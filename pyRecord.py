@@ -34,23 +34,14 @@ toLocal = False
 
 if len (sys.argv) <2:
     debug  ("You have not passed enough arguments")
-<<<<<<< HEAD
-    debug ("Usage: pyRecord [name=NAME] duration=DURATION_IN_SECONDS [toOwncloud] [toPodcast] [toLocal]")
-=======
     debug ("Usage: pyRecord name=NAME duration=DURATION_IN_SECONDS [toOwncloud] [toPodcast] [toLocal]")
->>>>>>> 6894b640b28fa05703839507514651463223458c
 
     exit (1)
 for param in sys.argv:
     #print (param)
     if "name" in str(param).lower():
         #print ("Found Name : " +  str(param).lower().strip("name="))
-<<<<<<< HEAD
-        name = str(param).lower().replace("name=","")
-=======
-        #name = str(param).lower().replace("name=","")
         name = param[5:]
->>>>>>> 6894b640b28fa05703839507514651463223458c
     if "duration" in str(param).lower():
         #print ("Found Duration of "+  str(param).lower().strip("duration="))
         try:
