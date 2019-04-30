@@ -3,7 +3,11 @@ trimstart = 20
 stream = http://media/stream/input
 server = server.hosting.podcastgenerator
 user = username
+<<<<<<< HEAD
 password = password
+=======
+password = somepassword
+>>>>>>> 6894b640b28fa05703839507514651463223458c
 podcastpath = /var/www/radio-podcasts/media/
 podcastrefreshurl=http://server.hosting.podcastgenerator/radio-podcasts/pg-cron.php?key=whatever
 saveto = ~/
