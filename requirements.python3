@@ -1,5 +1,5 @@
 python-vlc
-occlient
+pyocclient
 pyocclient
 paramiko
 shutil
