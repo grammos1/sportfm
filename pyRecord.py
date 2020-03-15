@@ -207,7 +207,7 @@ if toOwncloud:
 if toPodcast:
     debug ("Uploading file to podcast")
     ssh = paramiko.SSHClient()
-    ssh.load_host_keys(os.path.expanduser(os.path.join("~", ".ssh", "known_hosts")))
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(sshserver, username=sshuser, password=sshpass)
     sftp = ssh.open_sftp()
     sftp.put(filename, sshpath + filename)
