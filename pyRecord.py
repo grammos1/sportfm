@@ -161,9 +161,9 @@ while recording:
 
 try:
     # recording = AudioSegment.from_mp3(filename)
-    tempfilename = filename.replace(".mp3", "a.mp3")
+    tempfilename = filename.replace(".aac", "a.aac")
     os.replace(filename, tempfilename)
-    title = filename.replace(".mp3", "")
+    title = filename.replace(".aac", "")
     debug("Will set title to " + title)
     artist = streamName
     genre = "radio"
