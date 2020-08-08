@@ -131,7 +131,7 @@ filename = streamName + today + ".m4a"
 targetdir = "/" + streamName +"/" + str(now.year) + "/" + str(now.month) + " - " + str(now.strftime("%b"))
 debug ("Starting at " + str(now))
 debug ("Will stop at " + str(end))
-parameters = "sout=#transcode{acodec=mp4a,channels=2,ab=128,samplerate=44100}:duplicate{dst=std{access=file,mux=raw,dst='"+filename+"'"
+parameters = "sout=#transcode{acodec=mp4a,channels=2,ab=128,samplerate=44100}:duplicate{dst=std{access=file,mux=mp4,dst='"+filename+"'"
 caching_parameters ="--network-caching=5000"
 reconnect_parameters = "--http-reconnect"
 quiet_parameters = "--quiet"
