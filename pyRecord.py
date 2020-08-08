@@ -127,7 +127,7 @@ today = str(today[:10]).replace("-","")
 today = today[2:]
 today = today +"-"+ now.strftime('%a')
 streamName = name
-filename = streamName + today + ".aac"
+filename = streamName + today + ".m4a"
 targetdir = "/" + streamName +"/" + str(now.year) + "/" + str(now.month) + " - " + str(now.strftime("%b"))
 debug ("Starting at " + str(now))
 debug ("Will stop at " + str(end))
@@ -161,9 +161,9 @@ while recording:
 
 try:
     # recording = AudioSegment.from_mp3(filename)
-    tempfilename = filename.replace(".aac", "a.aac")
+    tempfilename = filename.replace(".m4a", "a.m4a")
     os.replace(filename, tempfilename)
-    title = filename.replace(".aac", "")
+    title = filename.replace(".m4a", "")
     debug("Will set title to " + title)
     artist = streamName
     genre = "radio"
