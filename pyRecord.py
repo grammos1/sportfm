@@ -127,11 +127,11 @@ today = str(today[:10]).replace("-","")
 today = today[2:]
 today = today +"-"+ now.strftime('%a')
 streamName = name
-filename = streamName + today + ".aac"
+filename = streamName + today + ".mp3"
 targetdir = "/" + streamName +"/" + str(now.year) + "/" + str(now.month) + " - " + str(now.strftime("%b"))
 debug ("Starting at " + str(now))
 debug ("Will stop at " + str(end))
-parameters = "sout=#transcode{acodec=mp4a,channels=2,ab=128,samplerate=44100}:duplicate{dst=std{access=file,mux=mp4,dst='"+filename+"'"
+parameters = "sout=#transcode{acodec=mp3,channels=2,ab=128,samplerate=44100}:duplicate{dst=std{access=file,mux=raw,dst='"+filename+"'"
 caching_parameters ="--network-caching=5000"
 reconnect_parameters = "--http-reconnect"
 quiet_parameters = "--quiet"
@@ -161,9 +161,9 @@ while recording:
 
 try:
     # recording = AudioSegment.from_mp3(filename)
-    tempfilename = filename.replace(".aac", "a.aac")
+    tempfilename = filename.replace(".mp3", "a.mp3")
     os.replace(filename, tempfilename)
-    title = filename.replace(".aac", "")
+    title = filename.replace(".mp3", "")
     debug("Will set title to " + title)
     artist = streamName
     genre = "radio"
